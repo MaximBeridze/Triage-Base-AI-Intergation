@@ -34,3 +34,11 @@
 - Reused model selection, smoke tests, persisted runs and admin comparisons; classification-only fields are explicit and no hidden Gemini generation is performed.
 - Passed build and expanded mock tests, checked the UI, ran identical five-ticket comparisons and the complete 100-ticket dev set. Preserved the interrupted first attempt and documented measured weaknesses.
 - Pricing uses a separately configured Cloudflare list-price estimate and is distinguished from actual free-allocation billing.
+
+### Assignment alignment after additional C3/C5 slides — 2026-10-24
+
+- Added the mandatory LLM-DM-report.md with verified hosted alternatives, selection rationale, explicit strategy choice and measured limitations.
+- Made LLM/DM strategy labels explicit in both selectors and new run metadata.
+- Restored the separate plain-text Triage V1 page and endpoint; kept structured V2 as the default.
+- Passed regression tests and production build, then checked five real V1 cases including long, ambiguous and injected input. Recorded the priority and category mistakes without altering the baseline prompt.
+- Documented the instructor's email submission channel. No email was sent.
