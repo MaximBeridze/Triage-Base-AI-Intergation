@@ -1,13 +1,15 @@
 "use client";
 import { useState, type FormEvent } from "react";
 import type { Run } from "../../lib/runs";
+import ModelPicker from "../model-picker";
 export default function SmokePage() {
   const [dataset,setDataset] = useState("labelled100"), [count,setCount] = useState(5);
+  const [model,setModel] = useState(""), [replay,setReplay] = useState(false);
   const [run,setRun] = useState<Run|null>(null), [busy,setBusy] = useState(false), [error,setError] = useState("");
   async function start(e: FormEvent) {
-    e.preventDefault(); setBusy(true); setRun(null); setError("");
+    e.preventDefault(); const replayId = replay ? run?.id : undefined; setBusy(true); setRun(null); setError("");
     try {
-      const response = await fetch("/api/smoke",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({dataset,count})});
+      const response = await fetch("/api/smoke",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({dataset,count,model,replay:replayId})});
       if (!response.ok) throw new Error((await response.json()).error || "Unable to start run.");
       const reader = response.body!.getReader(), decoder = new TextDecoder(); let buffer = "", finished = false;
       while (true) {
@@ -26,9 +28,9 @@ export default function SmokePage() {
   }
   return <main><header><div><p className="eyebrow">KESTREL / EVALUATION</p><h1>Smoke test runner</h1><p>Random samples. Visible predictions. Measurable quality.</p></div><nav><a href="/">Triage</a><a href="/admin">Run history</a></nav></header>
   <section className="card"><form className="toolbar" onSubmit={start}>
-    <label>Dataset<select value={dataset} disabled={busy} onChange={e=>{setDataset(e.target.value);setCount(5);}}><option value="labelled100">100 labelled tickets</option><option value="tickets500">500 unlabelled tickets</option></select></label>
+    <ModelPicker value={model} onChange={setModel} disabled={busy}/><label>Dataset<select value={dataset} disabled={busy} onChange={e=>{setDataset(e.target.value);setCount(5);setReplay(false);}}><option value="labelled100">100 labelled tickets</option><option value="tickets500">500 unlabelled tickets</option></select></label>
     <label>Sample size<input type="number" min={1} max={dataset==="labelled100"?100:500} value={count} disabled={busy} onChange={e=>setCount(Number(e.target.value))} required /></label>
-    <button disabled={busy}>{busy?"Running…":"Run random sample →"}</button></form><p className="muted">Calls run sequentially with a delay to respect provider limits. Keep this page open. A quota or configuration failure stops the run.</p>{error&&<p role="alert">{error}</p>}</section>
+    <button disabled={busy || !model}>{busy?"Running…":"Run sample →"}</button></form>{run&&!busy&&<label><input type="checkbox" checked={replay} onChange={e=>setReplay(e.target.checked)}/> Reuse this exact sample for the next model (keep dataset and count unchanged)</label>}<p className="muted">Calls run sequentially with a delay to respect provider limits. Keep this page open. A quota or configuration failure stops the run.</p>{error&&<p role="alert">{error}</p>}</section>
     {run&&<section className="card" aria-live="polite"><h2>{run.model} · {run.state}</h2><progress value={run.rows.length} max={run.requested}/><p>{run.rows.length} / {run.requested} processed · {run.summary.succeeded} successful</p>
       {run.dataset==="labelled100"?<div className="stats"><div className="stat"><strong>{run.summary.category_mismatches}</strong>Category mismatches</div><div className="stat"><strong>{run.summary.priority_mismatches}</strong>Priority mismatches</div></div>:<p>No ground-truth labels: accuracy is unavailable for this dataset.</p>}
       <p className="muted">Failed predictions count as mismatches. During a run, totals cover processed tickets only.</p>

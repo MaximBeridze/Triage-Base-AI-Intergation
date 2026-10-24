@@ -6,7 +6,7 @@ import { triage } from "./triage";
 import { TicketSchema } from "./schema";
 import { safeError } from "./errors";
 import { PROMPT_VERSION } from "./prompt";
-export const RunRequestSchema = z.strictObject({ dataset: z.enum(["labelled100", "tickets500"]), count: z.number().int().min(1).max(500) });
+export const RunRequestSchema = z.strictObject({ dataset: z.enum(["labelled100", "tickets500"]), count: z.number().int().min(1).max(500), model: z.string().max(100).optional(), replay: z.string().uuid().optional() });
 export type RunRow = { ticket_id: string; expected: { category: string; priority: string } | null; predicted: { category: string; priority: string; summary: string; suggested_action: string } | null; status: number; error?: string; latency_ms: number; usage: { input: number; output: number; total: number } | null; cost_usd: number | null; tags: string };
 export type Run = { id: string; created_at: string; prompt_version: string; model: string; dataset: string; requested: number; ticket_ids: string[]; state: "running" | "complete" | "interrupted"; rows: RunRow[]; summary: ReturnType<typeof summarize> };
 export function summarize(rows: RunRow[]) {
