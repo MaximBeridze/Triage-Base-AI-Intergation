@@ -32,15 +32,18 @@ export async function POST(request: Request) {
   }[] = [];
 
   for (const item of body.messages) {
-     if (
-        typeof item !== "object" ||
-        item === null ||
-        (item.role !== "user" && item.role !== "assistant") ||
-        typeof item.content !== "string" ||
-        !item.content.trim()
-      ) {
+    if (
+      typeof item !== "object" ||
+      item === null ||
+      (item.role !== "user" && item.role !== "assistant") ||
+      typeof item.content !== "string" ||
+      !item.content.trim()
+    ) {
       return Response.json(
-        { error: "Each message must have a user or assistant role and non-empty content." },
+        {
+          error:
+            "Each message must have a user or assistant role and non-empty content.",
+        },
         { status: 400 },
       );
     }
@@ -74,9 +77,7 @@ export async function POST(request: Request) {
     console.error("AI request failed:", {
       type: error instanceof Error ? error.name : "Unknown",
       status:
-        typeof error === "object" &&
-        error !== null &&
-        "status" in error
+        typeof error === "object" && error !== null && "status" in error
           ? error.status
           : "No HTTP status",
     });
@@ -85,5 +86,5 @@ export async function POST(request: Request) {
       { error: "Unable to reach the AI service. Please try again." },
       { status: 502 },
     );
-  };
+  }
 }

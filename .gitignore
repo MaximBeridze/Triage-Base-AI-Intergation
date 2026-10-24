@@ -6,3 +6,6 @@ node_modules/
 !.env.example
 logs/
 runs/*.tmp
+.next-*/
+tmp/
+tmp-tests-*/

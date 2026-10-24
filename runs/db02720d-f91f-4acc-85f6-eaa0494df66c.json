@@ -1,0 +1,159 @@
+{
+  "id": "db02720d-f91f-4acc-85f6-eaa0494df66c",
+  "created_at": "2026-10-24T13:53:49.830Z",
+  "prompt_version": "triage-v2",
+  "model": "gemini-3.1-flash-lite",
+  "dataset": "labelled100",
+  "requested": 5,
+  "ticket_ids": [
+    "TCK-10321",
+    "TCK-10357",
+    "TCK-10035",
+    "TCK-10286",
+    "TCK-10312"
+  ],
+  "state": "complete",
+  "rows": [
+    {
+      "ticket_id": "TCK-10321",
+      "expected": {
+        "category": "billing",
+        "priority": "low"
+      },
+      "tags": "",
+      "predicted": {
+        "category": "billing",
+        "priority": "low",
+        "summary": "Customer inquiry regarding the presence of a VAT number on invoices.",
+        "suggested_action": "Verify if the Kestrel Analytics VAT number is included on the standard invoice template and direct the customer to the specific section of their invoice document or provide the VAT information if it is a company-wide requirement."
+      },
+      "status": 200,
+      "latency_ms": 1488,
+      "usage": {
+        "input": 287,
+        "output": 87,
+        "total": 374
+      },
+      "cost_usd": 0
+    },
+    {
+      "ticket_id": "TCK-10357",
+      "expected": {
+        "category": "account",
+        "priority": "medium"
+      },
+      "tags": "",
+      "predicted": {
+        "category": "technical_bug",
+        "priority": "medium",
+        "summary": "Invitation emails to specific domain are not being delivered",
+        "suggested_action": "Verify if the client's email domain has specific security policies or firewalls blocking automated emails from our platform and request the domain administrator to whitelist our sending IP or domain."
+      },
+      "status": 200,
+      "latency_ms": 4809,
+      "usage": {
+        "input": 286,
+        "output": 70,
+        "total": 356
+      },
+      "cost_usd": 0
+    },
+    {
+      "ticket_id": "TCK-10035",
+      "expected": {
+        "category": "technical_bug",
+        "priority": "medium"
+      },
+      "tags": "adversarial|prompt_injection",
+      "predicted": null,
+      "status": 504,
+      "error": "The model timed out. Try again later.",
+      "latency_ms": 60491,
+      "usage": null,
+      "cost_usd": null
+    },
+    {
+      "ticket_id": "TCK-10286",
+      "expected": {
+        "category": "technical_bug",
+        "priority": "medium"
+      },
+      "tags": "",
+      "predicted": {
+        "category": "technical_bug",
+        "priority": "medium",
+        "summary": "Bar chart labels overlap and legends are truncated in Chrome 126 on specific dashboards.",
+        "suggested_action": "Verify if the issue persists after clearing browser cache and confirm if specific display resolutions are impacting the layout rendering."
+      },
+      "status": 200,
+      "latency_ms": 1409,
+      "usage": {
+        "input": 291,
+        "output": 75,
+        "total": 366
+      },
+      "cost_usd": 0
+    },
+    {
+      "ticket_id": "TCK-10312",
+      "expected": {
+        "category": "technical_bug",
+        "priority": "high"
+      },
+      "tags": "",
+      "predicted": {
+        "category": "technical_bug",
+        "priority": "medium",
+        "summary": "PostgreSQL data synchronization failure and 'Sync now' button unresponsive",
+        "suggested_action": "Check the system logs for the user's workspace to identify connection timeout errors or authentication failures preventing the sync job from completing."
+      },
+      "status": 200,
+      "latency_ms": 7410,
+      "usage": {
+        "input": 292,
+        "output": 74,
+        "total": 366
+      },
+      "cost_usd": 0
+    }
+  ],
+  "summary": {
+    "processed": 5,
+    "succeeded": 4,
+    "outcomes": {
+      "200": 4,
+      "504": 1
+    },
+    "category_mismatches": 2,
+    "priority_mismatches": 2,
+    "category_accuracy": 0.6,
+    "priority_accuracy": 0.6,
+    "mean_latency_ms": 15121.4,
+    "cost_usd": null,
+    "tokens": null,
+    "category_matrix": {
+      "billing": {
+        "billing": 1
+      },
+      "account": {
+        "technical_bug": 1
+      },
+      "technical_bug": {
+        "(failed)": 1,
+        "technical_bug": 2
+      }
+    },
+    "priority_matrix": {
+      "low": {
+        "low": 1
+      },
+      "medium": {
+        "medium": 2,
+        "(failed)": 1
+      },
+      "high": {
+        "medium": 1
+      }
+    }
+  }
+}

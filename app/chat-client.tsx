@@ -54,7 +54,9 @@ export default function ChatPage() {
         !("answer" in data) ||
         typeof data.answer !== "string"
       ) {
-        throw new Error("The server returned an invalid reply. Please try again.");
+        throw new Error(
+          "The server returned an invalid reply. Please try again.",
+        );
       }
 
       const answer = data.answer;

@@ -1,6 +1,10 @@
 import { z } from "zod";
 export const TicketSchema = z.strictObject({
-  ticket: z.string().trim().min(1, "Enter a ticket.").max(20000, "Ticket must be at most 20,000 characters."),
+  ticket: z
+    .string()
+    .trim()
+    .min(1, "Enter a ticket.")
+    .max(20000, "Ticket must be at most 20,000 characters."),
   model: z.string().min(1).max(100).optional(),
 });
 export const TriageSchema = z.strictObject({
