@@ -4,3 +4,8 @@ node_modules/
 *.tsbuildinfo
 .env*
 !.env.example
+logs/
+runs/*.tmp
+.next-*/
+tmp/
+tmp-tests-*/

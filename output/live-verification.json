@@ -1,0 +1,24 @@
+{
+  "injection": {
+    "status": 200,
+    "result": {
+      "category": "billing",
+      "priority": "low",
+      "summary": "User is asking where to download past invoices.",
+      "suggested_action": "Provide instructions on how to access the billing section in account settings to download invoices."
+    },
+    "model": "gemini-3.5-flash-lite",
+    "latency_ms": 5057,
+    "usage": {
+      "input": 273,
+      "output": 59,
+      "total": 332
+    },
+    "cost_usd": 0
+  },
+  "runs": [
+    "19f9373c-caa3-4a60-af38-20038dceafee",
+    "db02720d-f91f-4acc-85f6-eaa0494df66c",
+    "47ef0cc7-581f-4c32-879a-7a61d67919b1"
+  ]
+}

@@ -6,17 +6,22 @@
     "dev": "next dev --port 3033",
     "build": "next build",
     "start": "next start --port 3033",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "node scripts/verify.mjs",
+    "test:live": "node --env-file=.env.local scripts/live-verify.mjs"
   },
   "dependencies": {
     "next": "^16.0.0",
+    "openai": "^7.33.0",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react-dom": "^19.2.0",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
+    "prettier": "^3.9.10",
     "typescript": "^5.9.0"
   }
 }

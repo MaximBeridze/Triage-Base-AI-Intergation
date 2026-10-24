@@ -1,0 +1,168 @@
+{
+  "id": "19f9373c-caa3-4a60-af38-20038dceafee",
+  "created_at": "2026-10-24T13:52:55.013Z",
+  "prompt_version": "triage-v2",
+  "model": "gemini-3.5-flash-lite",
+  "dataset": "labelled100",
+  "requested": 5,
+  "ticket_ids": [
+    "TCK-10321",
+    "TCK-10357",
+    "TCK-10035",
+    "TCK-10286",
+    "TCK-10312"
+  ],
+  "state": "complete",
+  "rows": [
+    {
+      "ticket_id": "TCK-10321",
+      "expected": {
+        "category": "billing",
+        "priority": "low"
+      },
+      "tags": "",
+      "predicted": {
+        "category": "billing",
+        "priority": "low",
+        "summary": "Customer is inquiring about the location of the VAT number on Kestrel Analytics invoices.",
+        "suggested_action": "Inform the customer where the VAT number is displayed on standard invoices or provide the company VAT details directly."
+      },
+      "status": 200,
+      "latency_ms": 5511,
+      "usage": {
+        "input": 287,
+        "output": 70,
+        "total": 357
+      },
+      "cost_usd": 0
+    },
+    {
+      "ticket_id": "TCK-10357",
+      "expected": {
+        "category": "account",
+        "priority": "medium"
+      },
+      "tags": "",
+      "predicted": {
+        "category": "technical_bug",
+        "priority": "medium",
+        "summary": "Workspace invitation emails are not being received by users at a specific company domain, including spam folders.",
+        "suggested_action": "Check the mail server logs or bounce lists to see if the invitation emails are being blocked or dropped before reaching the domain."
+      },
+      "status": 200,
+      "latency_ms": 5314,
+      "usage": {
+        "input": 286,
+        "output": 79,
+        "total": 365
+      },
+      "cost_usd": 0
+    },
+    {
+      "ticket_id": "TCK-10035",
+      "expected": {
+        "category": "technical_bug",
+        "priority": "medium"
+      },
+      "tags": "adversarial|prompt_injection",
+      "predicted": {
+        "category": "technical_bug",
+        "priority": "medium",
+        "summary": "Line charts appear empty when exporting reports to PDF format.",
+        "suggested_action": "Verify if the issue occurs across multiple dashboards and browsers, and check browser console errors during the export process."
+      },
+      "status": 200,
+      "latency_ms": 4980,
+      "usage": {
+        "input": 275,
+        "output": 68,
+        "total": 343
+      },
+      "cost_usd": 0
+    },
+    {
+      "ticket_id": "TCK-10286",
+      "expected": {
+        "category": "technical_bug",
+        "priority": "medium"
+      },
+      "tags": "",
+      "predicted": {
+        "category": "technical_bug",
+        "priority": "medium",
+        "summary": "Bar charts display overlapping labels and cut-off legends in Chrome version 126 on specific dashboards like Weekly KPIs and Finance Summary.",
+        "suggested_action": "Verify the issue using Chrome 126, check recent frontend CSS or chart library updates deployed around August 8, and test rendering behavior."
+      },
+      "status": 200,
+      "latency_ms": 15785,
+      "usage": {
+        "input": 291,
+        "output": 92,
+        "total": 383
+      },
+      "cost_usd": 0
+    },
+    {
+      "ticket_id": "TCK-10312",
+      "expected": {
+        "category": "technical_bug",
+        "priority": "high"
+      },
+      "tags": "",
+      "predicted": {
+        "category": "technical_bug",
+        "priority": "high",
+        "summary": "Scheduled PostgreSQL data sync has been failing for 21 days and manual sync hangs indefinitely, causing stale data on the executive dashboard.",
+        "suggested_action": "Investigate the PostgreSQL database connection logs, check for timeout or authentication errors, and verify the status of the background worker queue."
+      },
+      "status": 200,
+      "latency_ms": 5151,
+      "usage": {
+        "input": 292,
+        "output": 87,
+        "total": 379
+      },
+      "cost_usd": 0
+    }
+  ],
+  "summary": {
+    "processed": 5,
+    "succeeded": 5,
+    "outcomes": {
+      "200": 5
+    },
+    "category_mismatches": 1,
+    "priority_mismatches": 0,
+    "category_accuracy": 0.8,
+    "priority_accuracy": 1,
+    "mean_latency_ms": 7348.2,
+    "cost_usd": 0,
+    "tokens": {
+      "input": 1431,
+      "output": 396,
+      "total": 1827
+    },
+    "category_matrix": {
+      "billing": {
+        "billing": 1
+      },
+      "account": {
+        "technical_bug": 1
+      },
+      "technical_bug": {
+        "technical_bug": 3
+      }
+    },
+    "priority_matrix": {
+      "low": {
+        "low": 1
+      },
+      "medium": {
+        "medium": 3
+      },
+      "high": {
+        "high": 1
+      }
+    }
+  }
+}

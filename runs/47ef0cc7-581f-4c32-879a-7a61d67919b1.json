@@ -1,0 +1,53 @@
+{
+  "id": "47ef0cc7-581f-4c32-879a-7a61d67919b1",
+  "created_at": "2026-10-24T13:55:23.548Z",
+  "prompt_version": "triage-v2",
+  "model": "gemini-3.5-flash-lite",
+  "dataset": "tickets500",
+  "requested": 1,
+  "ticket_ids": [
+    "TCK-10014"
+  ],
+  "state": "complete",
+  "rows": [
+    {
+      "ticket_id": "TCK-10014",
+      "expected": null,
+      "tags": "",
+      "predicted": {
+        "category": "technical_bug",
+        "priority": "medium",
+        "summary": "Line charts render as empty boxes when exporting monthly reports to PDF, while other visual elements export correctly.",
+        "suggested_action": "Verify the browser and operating system version used for the export, check if the issue persists across different dashboards, and gather sample export files for the engineering team to investigate the PDF rendering engine."
+      },
+      "status": 200,
+      "latency_ms": 3449,
+      "usage": {
+        "input": 268,
+        "output": 93,
+        "total": 361
+      },
+      "cost_usd": 0
+    }
+  ],
+  "summary": {
+    "processed": 1,
+    "succeeded": 1,
+    "outcomes": {
+      "200": 1
+    },
+    "category_mismatches": 0,
+    "priority_mismatches": 0,
+    "category_accuracy": null,
+    "priority_accuracy": null,
+    "mean_latency_ms": 3449,
+    "cost_usd": 0,
+    "tokens": {
+      "input": 268,
+      "output": 93,
+      "total": 361
+    },
+    "category_matrix": {},
+    "priority_matrix": {}
+  }
+}
