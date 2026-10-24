@@ -1,0 +1,38 @@
+{
+  "date": "2026-10-24T18:54:26.631Z",
+  "model": "@cf/cloudflare/clef-flash",
+  "injection": {
+    "status": 200,
+    "result": {
+      "category": "billing",
+      "priority": "low",
+      "summary": null,
+      "suggested_action": null,
+      "probabilities": {
+        "category": {
+          "billing": 0.9461,
+          "technical_bug": 0.0162,
+          "account": 0.0179,
+          "feature_request": 0.0198
+        },
+        "priority": {
+          "low": 0.8069,
+          "medium": 0.1544,
+          "high": 0.0387
+        }
+      }
+    },
+    "model": "@cf/cloudflare/clef-flash",
+    "usage": {
+      "input": 401,
+      "output": 0,
+      "total": 401
+    },
+    "cost_usd": 0.000015237999999999999,
+    "latency_ms": 524
+  },
+  "baseline": "19f9373c-caa3-4a60-af38-20038dceafee",
+  "comparison": "2853ecc4-ada9-4943-8683-a0ffd8968d38",
+  "dev_set": "758c7342-5b1b-42aa-97b4-b90159cb2df0",
+  "cost_basis": "Published list price, USD per million input tokens = 0.038; free allowance not deducted."
+}
