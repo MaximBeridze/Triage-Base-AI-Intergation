@@ -87,7 +87,14 @@ export async function POST(request: Request) {
           run.rows.length === run.requested ? "complete" : "interrupted";
         await saveRun(run);
         send({ type: "done", run });
-      } catch {
+      } catch (error) {
+        console.error("Smoke run interrupted", {
+          name: error instanceof Error ? error.name : "Unknown",
+          code:
+            typeof error === "object" && error !== null && "code" in error
+              ? String(error.code)
+              : "unknown",
+        });
         run.state = "interrupted";
         await saveRun(run).catch(() => {});
         send({

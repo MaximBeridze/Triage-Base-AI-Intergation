@@ -2,7 +2,9 @@ import {
   TicketSchema,
   requestJsonSchema,
   responseJsonSchema,
+  DecisionResultSchema,
 } from "../../../lib/schema";
+import { z } from "zod";
 import { triage } from "../../../lib/triage";
 import { errorResponse } from "../../../lib/errors";
 import { chooseModel } from "../../../lib/config";
@@ -10,6 +12,7 @@ export function GET() {
   return Response.json({
     request: requestJsonSchema,
     response: responseJsonSchema,
+    decision_response: z.toJSONSchema(DecisionResultSchema),
   });
 }
 export async function POST(request: Request) {

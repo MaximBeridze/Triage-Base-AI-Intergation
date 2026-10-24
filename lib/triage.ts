@@ -5,8 +5,10 @@ import { AppError, safeError } from "./errors";
 import { usageFrom, costFor, type Usage } from "./metrics";
 import { logCall } from "./storage";
 import { PROMPT_VERSION } from "./prompt";
+import { DECISION_MODEL, decisionTriage } from "./decision";
 
 export async function triage(ticket: string, model = process.env.LLM_MODEL!) {
+  if (model === DECISION_MODEL) return decisionTriage(ticket);
   const started = Date.now();
   let usage: Usage | null = { input: 0, output: 0, total: 0 };
   const mode = process.env.LLM_STRUCTURED_OUTPUT || "json_schema";

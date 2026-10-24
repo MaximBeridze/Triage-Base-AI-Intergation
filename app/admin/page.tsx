@@ -69,6 +69,10 @@ export default async function AdminPage({
                   </p>
                   <p>Outcomes: {JSON.stringify(r!.summary.outcomes)}</p>
                   <p>Tokens: {r!.summary.tokens?.total ?? "unavailable"}</p>
+                  <small>
+                    {r!.cost_basis ||
+                      "Historical run: see README for configured pricing basis."}
+                  </small>
                 </div>
               ))}
             </div>

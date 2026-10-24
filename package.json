@@ -8,7 +8,8 @@
     "start": "next start --port 3033",
     "typecheck": "tsc --noEmit",
     "test": "node scripts/verify.mjs",
-    "test:live": "node --env-file=.env.local scripts/live-verify.mjs"
+    "test:live": "node --env-file=.env.local scripts/live-verify.mjs",
+    "test:clef": "node --env-file=.env.local scripts/verify-clef.mjs"
   },
   "dependencies": {
     "next": "^16.0.0",
