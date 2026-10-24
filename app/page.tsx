@@ -1,9 +1,11 @@
 "use client";
 import { useState, type FormEvent } from "react";
 import { TriageSchema, type TriageResult } from "../lib/schema";
+import type { Usage } from "../lib/metrics";
 export default function TriagePage() {
   const [ticket, setTicket] = useState("");
   const [result, setResult] = useState<TriageResult | null>(null);
+  const [usage, setUsage] = useState<Usage | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   async function submit(event: FormEvent) {
@@ -13,6 +15,7 @@ export default function TriagePage() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Triage failed.");
       setResult(TriageSchema.parse(data.result));
+      setUsage(data.usage);
     } catch (e) { setError(e instanceof Error ? e.message : "Triage failed."); }
     finally { setBusy(false); }
   }
@@ -22,7 +25,7 @@ export default function TriagePage() {
       <label htmlFor="ticket">Subject and ticket body</label><textarea id="ticket" rows={12} value={ticket} onChange={e => setTicket(e.target.value)} maxLength={20000} placeholder="Paste a customer support ticket here…" disabled={busy} />
       <small>{ticket.length.toLocaleString()} / 20,000 characters</small><button disabled={busy} type="submit">{busy ? "Analysing…" : "Triage ticket →"}</button>
     </form>{error && <p role="alert">{error}</p>}</section>
-    <section className="card" aria-live="polite"><h2>Triage recommendation</h2>{result ? <><div className="badges"><span>{result.category.replaceAll("_", " ")}</span><span className={result.priority}>{result.priority} priority</span></div><h3>Summary</h3><p>{result.summary}</p><h3>Suggested action</h3><p>{result.suggested_action}</p><p className="muted">AI recommendation · Review before acting.</p></> : <p className="empty">{busy ? "Waiting for a validated model response…" : "Your ticket’s classification and next action will appear here."}</p>}</section></div>
+    <section className="card" aria-live="polite"><h2>Triage recommendation</h2>{result ? <><div className="badges"><span>{result.category.replaceAll("_", " ")}</span><span className={result.priority}>{result.priority} priority</span></div><h3>Summary</h3><p>{result.summary}</p><h3>Suggested action</h3><p>{result.suggested_action}</p><h3>Token usage</h3><p>{usage ? `Input: ${usage.input} · Output: ${usage.output} · Total: ${usage.total}` : "Provider did not report token usage."}</p><p className="muted">AI recommendation · Review before acting.</p></> : <p className="empty">{busy ? "Waiting for a validated model response…" : "Your ticket’s classification and next action will appear here."}</p>}</section></div>
   </main>;
 }
 

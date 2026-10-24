@@ -2,9 +2,11 @@ import { llm } from "./llm";
 import { TriageSchema, responseJsonSchema } from "./schema";
 import { SYSTEM_PROMPT } from "./prompt";
 import { AppError } from "./errors";
+import { usageFrom, costFor, type Usage } from "./metrics";
 
 export async function triage(ticket: string, model = process.env.LLM_MODEL!) {
   const started = Date.now();
+  let usage: Usage | null = { input: 0, output: 0, total: 0 };
   const mode = process.env.LLM_STRUCTURED_OUTPUT || "json_schema";
   if (!["json_schema", "prompt"].includes(mode)) throw new AppError(500, "internal_error", "Invalid output configuration.");
   for (let attempt = 0; attempt < 2; attempt++) {
@@ -17,12 +19,14 @@ export async function triage(ticket: string, model = process.env.LLM_MODEL!) {
       } } : {}),
     });
     const choice = completion.choices[0];
+    const current = usageFrom(completion.usage);
+    usage = usage && current ? { input: usage.input + current.input, output: usage.output + current.output, total: usage.total + current.total } : null;
     let text = choice?.message.content ?? "";
     if (mode === "prompt") text = text.replace(/^\s*```(?:json)?\s*/i, "").replace(/\s*```\s*$/, "");
     try {
       if (!choice || choice.finish_reason !== "stop") throw new Error("Incomplete output");
       const result = TriageSchema.parse(JSON.parse(text));
-      return { result, model, latency_ms: Date.now() - started };
+      return { result, model, latency_ms: Date.now() - started, usage, cost_usd: costFor(usage) };
     } catch {
       if (attempt === 1) throw new AppError(502, "invalid_model_output", "The model returned an invalid result after one retry.");
     }
