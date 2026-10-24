@@ -174,6 +174,22 @@ try {
   assert.deepEqual(d.result, valid);
   assert.deepEqual(d.usage, { input: 11, output: 7, total: 18 });
   assert.equal(d.cost_usd, 0);
+  const v1 = await post("/api/triage/v1", {
+    ticket: "A cosmetic issue",
+    model: "test-model",
+  });
+  assert.equal(v1.status, 200);
+  assert.equal(typeof (await v1.json()).answer, "string");
+  assert.equal((await post("/api/triage/v1", { ticket: "" })).status, 400);
+  assert.equal(
+    (
+      await post("/api/triage/v1", {
+        ticket: "x",
+        model: "@cf/cloudflare/clef-flash",
+      })
+    ).status,
+    400,
+  );
   await checkStatus({ ticket: "x", model: "unapproved" }, 400);
   mode = "retry";
   calls = 0;

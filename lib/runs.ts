@@ -31,6 +31,7 @@ export type Run = {
   prompt_version: string;
   model: string;
   cost_basis?: string;
+  strategy?: "llm" | "dm";
   dataset: string;
   requested: number;
   ticket_ids: string[];
@@ -121,6 +122,7 @@ export function createRun(
     prompt_version:
       model === DECISION_MODEL ? DECISION_VERSION : PROMPT_VERSION,
     model,
+    strategy: model === DECISION_MODEL ? "dm" : "llm",
     cost_basis:
       model === DECISION_MODEL
         ? `Configured USD per million tokens: input ${process.env.CLOUDFLARE_INPUT_PRICE_PER_MILLION || "unknown"}; output 0. Free allocation is not automatically deducted.`

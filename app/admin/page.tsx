@@ -57,6 +57,13 @@ export default async function AdminPage({
                 <div key={r!.id}>
                   <h3>{r!.model}</h3>
                   <p>
+                    Strategy:{" "}
+                    {r!.strategy ||
+                      (r!.model.startsWith("@cf/cloudflare/clef")
+                        ? "dm"
+                        : "llm")}
+                  </p>
+                  <p>
                     Category {percent(r!.summary.category_accuracy)} · Priority{" "}
                     {percent(r!.summary.priority_accuracy)}
                   </p>
