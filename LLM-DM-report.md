@@ -1,10 +1,8 @@
 # LLM–DM report
 
-## Scope and assignment sources
+## Overview
 
-This report addresses the Decision Model Integration Assignment on page 22 of the C5 "Decisions Decisions" presentation. That page requires hosted-model research and justification, a front-end strategy choice, smoke-test support, model tracking and this exact report filename. Page 23 restates the Teams F1–F5 requirements.
-
-The companion C5 Part III presentation, page 2, specifies the complete triage submission: chat, Triage V2, the Teams assignment and the DM assignment. The extra deck also explicitly lists Triage V1. C3 Part II, pages 13–20 and 26, explains chat history, the plain-text V1 checkpoint, versioned prompts and the experiment journal. C4 continues the structured-output and evaluation work. C6's RAG specification describes a separate project.
+This report compares Gemini text generation with Clef-Flash classification for support-ticket triage. It covers model selection, integration, evaluation results and limitations.
 
 ## Hosted decision-model options researched
 
@@ -16,9 +14,9 @@ Research checked on 2026-10-24. Only Clef-Flash was actually called in this proj
 | Cloudflare Clef                                         | Hosted decision model, 27B, 65,536-token context, listed at $0.24/M input tokens. [Model documentation](https://developers.cloudflare.com/workers-ai/models/clef/)                                                     | Considered for a future accuracy comparison. Its larger context was unnecessary for the present ticket bound; it was not tested, so no accuracy advantage is claimed. |
 | vLLM Semantic Router Decision 3.0, for example d3-flash | The provider documents a free hosted System One endpoint, API keys and multiple models. [Official API documentation](https://decision.vllm-sr.ai/docs)                                                                 | A viable free alternative, but another credential/provider integration would add work without improving the evidence for the already-working integration. Not tested. |
 
-Cloudflare's free allowance is 10,000 Neurons per day; additional usage requires a paid plan. A free allowance is limited access, not a permanently zero list price. [Workers AI pricing](https://developers.cloudflare.com/workers-ai/platform/pricing/). This implementation never enrolls the user in paid billing.
+Cloudflare's free allowance is 10,000 Neurons per day; additional usage requires a paid plan. A free allowance is limited access, not a permanently zero list price. [Workers AI pricing](https://developers.cloudflare.com/workers-ai/platform/pricing/). Billing is managed through the provider account.
 
-**Why Clef-Flash:** it provides the two closed decisions needed here (four categories and three priorities), a hosted API with documented probabilities, no local GPU requirement, and access already verified using our configured account. We selected it for integration practicality, not because we established it as the best available decision model.
+**Why Clef-Flash:** it provides the two closed decisions needed here (four categories and three priorities), a hosted API with documented probabilities, no local GPU requirement, and verified API access. The selection prioritizes integration practicality; the alternatives were not benchmarked.
 
 ## Integration strategy
 
@@ -27,9 +25,7 @@ The front-end **Strategy and model** selector supports two explicit strategies:
 - **LLM · generate:** Gemini produces category, priority, summary and suggested action. The model's JSON is parsed and checked with the original strict Zod schema.
 - **DM · classify:** Clef-Flash returns category and priority plus their probability distributions. Summary and suggested_action are explicitly null; the UI explains that these fields require a generative model.
 
-We considered **DM + LLM**, where Clef classifies and Gemini writes the summary/action. We did not implement that optional combination. It would require two provider calls, accumulate their cost/latency, and complicate attribution. Separate selectable strategies make the experiment inspectable: a Clef result never includes a hidden Gemini call.
-
-This choice follows the assignment's instruction to choose how to use the DM and expose the chosen strategy in the UI. The prompt asks about possible strategies; it does not explicitly require every combination.
+**DM + LLM**, where Clef classifies and Gemini writes the summary/action, was considered but not implemented. It would require two provider calls, accumulate their cost/latency, and complicate attribution. Separate selectable strategies make the experiment inspectable: a Clef result never includes a hidden Gemini call.
 
 ### Request-to-result trace
 
@@ -49,7 +45,7 @@ The labelled development set contains 100 supplied tickets. The 500-ticket set h
 
 Accuracy includes all processed labelled rows; a failed prediction counts as incorrect for both fields. Unprocessed tickets are not silently counted as successes. Failed outputs also appear in the confusion matrix. The admin page and downloaded JSON distinguish complete and interrupted runs.
 
-We measured category and priority agreement separately, outcome counts, wall-clock ticket latency, token usage and estimated USD cost. We checked one injection ticket (TCK-10087) and the browser result/usage display. This does not establish general injection resistance or confidence calibration.
+The evaluation measured category and priority agreement separately, outcome counts, wall-clock ticket latency, token usage and estimated USD cost. Additional checks covered one injection ticket (TCK-10087) and the browser result/usage display. This does not establish general injection resistance or confidence calibration.
 
 ## Measured results
 
@@ -91,17 +87,15 @@ One initial larger run stopped at 98 successful processed tickets and is retaine
 
 ## Capability limits and verification
 
-Clef cannot write summaries, actions or explanations. A typed output guarantees neither semantic correctness nor trustworthy confidence. We validate shape and distribution consistency, but have not measured calibration or chosen an empirically justified review threshold. No automatic action or customer response is sent.
+Clef cannot write summaries, actions or explanations. A typed output guarantees neither semantic correctness nor trustworthy confidence. The implementation validates shape and distribution consistency, but have not measured calibration or chosen an empirically justified review threshold. No automatic action or customer response is sent.
 
-The integration suite checks request rejection before provider calls, allowlisting, malformed labels/JSON/distributions, safe auth/quota errors, null generative fields, usage/cost mapping, replay, persistence and a 100-ticket mock run. TypeScript, production build and browser checks supplement it. A separate plain-text V1 page preserves the earlier teaching checkpoint while the default V2 flow validates structured output.
+The integration suite checks request rejection before provider calls, allowlisting, malformed labels/JSON/distributions, safe auth/quota errors, null generative fields, usage/cost mapping, replay, persistence and a 100-ticket mock run. TypeScript, production build and browser checks supplement it. V1 returns plain text; the default V2 flow validates structured output.
 
 **Task choice:** Clef-Flash is a fast category-routing candidate with reviewed urgency; Gemini is needed when the workflow must produce readable summaries and next actions.
 
-AI assistance was used for implementation and this report. Measured results are backed by the saved artifacts. The student should be able to trace a request, explain the strategy trade-offs and modify the decision rubric without regenerating the project.
+## Plain-text V1 results
 
-## V1 checkpoint verification
-
-The restored /triage-v1 page preserves the plain-text checkpoint from C3 Activity 3. Its output intentionally has no classification schema, while input guards remain enabled. The versioned V1 prompt lives beside the V2 prompt in lib/prompt.ts.
+The /triage-v1 page returns plain-text triage results. Its output intentionally has no classification schema, while input guards remain enabled. The versioned V1 prompt lives beside the V2 prompt in lib/prompt.ts.
 
 Five live Gemini calls were saved in output/v1-verification.json: TCK-10001 (obvious cosmetic bug), TCK-10017 (ambiguous wording), TCK-10019 (long ticket), TCK-10087 (injected instruction), and TCK-10005 (invoice request). All returned readable text. Against the available labelled cases, V1 correctly gave TCK-10001 low priority, but over-escalated TCK-10017 and TCK-10019 to high where both labels are medium. The injection example did not produce pirate instructions, but was treated as technical_bug rather than the billing category used by the course example. The PO-number request became feature_request rather than the course example's billing-related interpretation.
 

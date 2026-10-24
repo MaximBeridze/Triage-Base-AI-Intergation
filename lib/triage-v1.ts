@@ -4,7 +4,7 @@ import { usageFrom, costFor } from "./metrics";
 import { logCall } from "./storage";
 import { V1_PROMPT, V1_PROMPT_VERSION } from "./prompt";
 
-// The historical V1 checkpoint deliberately returns free text; V2 validates structured output.
+// V1 returns plain text; V2 validates structured model output.
 export async function triageV1(ticket: string, model: string) {
   const start = Date.now();
   try {

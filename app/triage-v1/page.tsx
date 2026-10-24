@@ -33,9 +33,9 @@ export default function PlainTriage() {
     <main>
       <header>
         <div>
-          <p className="eyebrow">KESTREL / ACTIVITY 3</p>
+          <p className="eyebrow">KESTREL / SUPPORT OPERATIONS</p>
           <h1>Plain-text triage V1</h1>
-          <p>The original end-to-end checkpoint before structured output.</p>
+          <p>Ticket classification and recommendations in plain text.</p>
         </div>
         <nav>
           <a href="/">Structured V2</a>

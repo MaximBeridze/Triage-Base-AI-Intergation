@@ -80,7 +80,7 @@ export default function ChatPage() {
   return (
     <main className="chat">
       <h1>Support chat</h1>
-      <p>Send a message and get an echo reply.</p>
+      <p>Ask a question and continue the conversation.</p>
       <section
         className="messages"
         role="log"

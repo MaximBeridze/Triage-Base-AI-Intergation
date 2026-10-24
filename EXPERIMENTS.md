@@ -10,7 +10,7 @@ Only actual model calls are listed below. Mock-provider checks are documented se
 | 2026-10-24 | triage-v2      | Google / gemini-3.5-flash-lite | 47ef0cc7-581f-4c32-879a-7a61d67919b1 | 1/1 successful from unlabelled 500 set                | No labels available                                                     | Accuracy shown as N/A                                                     |
 | 2026-10-24 | triage-v2      | Google / gemini-3.5-flash-lite | Browser outage example               | technical_bug / high; input 260, output 80, total 340 | None observed                                                           | Confirmed UI token display                                                |
 
-Five tickets are insufficient to establish general accuracy. The labelled subset is a development set; these results do not substitute for the instructor's hold-out evaluation.
+Five tickets are insufficient to establish general accuracy. The labelled subset is a development set; these results do not substitute for a separate hold-out evaluation.
 
 ## Decision-model experiments
 
@@ -22,7 +22,7 @@ Five tickets are insufficient to establish general accuracy. The labelled subset
 | 2026-10-24 | clef-v1        | Cloudflare / clef-flash | 2853ecc4-ada9-4943-8683-a0ffd8968d38 | Repeated five-ticket replay: 80% category, 100% priority, 0.52 s mean | Same category disagreement                                                 | Kept version for larger evaluation                                                      |
 | 2026-10-24 | clef-v1        | Cloudflare / clef-flash | 758c7342-5b1b-42aa-97b4-b90159cb2df0 | All 100: category 91%, priority 67%, mean 0.51 s                      | Seven high-to-medium priority errors; seven account-to-bug category errors | Recommend reviewed priority decisions; future rubric tuning needs a separate evaluation |
 
-## Restored V1 baseline
+## Plain-text V1 baseline
 
 | Date       | Prompt version | Provider / model      | Ticket    | Observation           | Failure / next action                                                                        |
 | ---------- | -------------- | --------------------- | --------- | --------------------- | -------------------------------------------------------------------------------------------- |

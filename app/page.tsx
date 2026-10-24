@@ -40,7 +40,7 @@ export default function TriagePage() {
           <p>Turn a customer request into a clear next step.</p>
         </div>
         <nav>
-          <a href="/chat">Chat exercise</a>
+          <a href="/chat">Chat</a>
           <a href="/triage-v1">Plain-text V1</a>
           <a href="/smoke">Smoke tests</a>
           <a href="/admin">Run history</a>
