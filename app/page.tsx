@@ -1,114 +1,28 @@
 "use client";
-
 import { useState, type FormEvent } from "react";
-
-type Message = {
-  role: "user" | "assistant";
-  text: string;
-};
-
-export default function ChatPage() {
-  const [text, setText] = useState("");
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [isSending, setIsSending] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  async function sendMessage(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (isSending || !text.trim()) return;
-
-    const message = text;
-    setIsSending(true);
-    setError(null);
-
+import { TriageSchema, type TriageResult } from "../lib/schema";
+export default function TriagePage() {
+  const [ticket, setTicket] = useState("");
+  const [result, setResult] = useState<TriageResult | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  async function submit(event: FormEvent) {
+    event.preventDefault(); setBusy(true); setError(""); setResult(null);
     try {
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          messages: [
-            ...messages.map((item) => ({
-              role: item.role,
-              content: item.text,
-            })),
-            { role: "user", content: message },
-          ],
-        }),
-      });
-      const data: unknown = await response.json();
-
-      if (!response.ok) {
-        const detail =
-          typeof data === "object" &&
-          data !== null &&
-          "error" in data &&
-          typeof data.error === "string"
-            ? data.error
-            : "Unable to send your message. Please try again.";
-        throw new Error(detail);
-      }
-
-      if (
-        typeof data !== "object" ||
-        data === null ||
-        !("answer" in data) ||
-        typeof data.answer !== "string"
-      ) {
-        throw new Error("The server returned an invalid reply. Please try again.");
-      }
-
-      const answer = data.answer;
-      setMessages((previous) => [
-        ...previous,
-        { role: "user", text: message },
-        { role: "assistant", text: answer },
-      ]);
-      setText("");
-    } catch (error) {
-      setError(
-        error instanceof Error
-          ? error.message
-          : "Unable to send your message. Please try again.",
-      );
-    } finally {
-      setIsSending(false);
-    }
+      const response = await fetch("/api/triage", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ticket }) });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Triage failed.");
+      setResult(TriageSchema.parse(data.result));
+    } catch (e) { setError(e instanceof Error ? e.message : "Triage failed."); }
+    finally { setBusy(false); }
   }
-
-  return (
-    <main className="chat">
-      <h1>Support chat</h1>
-      <p>Send a message and get an echo reply.</p>
-      <section
-        className="messages"
-        role="log"
-        aria-label="Chat messages"
-        aria-live="polite"
-      >
-        {messages.length === 0 && <p>No messages yet.</p>}
-        {messages.map((message, index) => (
-          <div className={`message ${message.role}`} key={index}>
-            <strong>{message.role === "user" ? "You" : "Assistant"}</strong>
-            <p>{message.text}</p>
-          </div>
-        ))}
-      </section>
-      <form onSubmit={sendMessage} aria-busy={isSending}>
-        <label htmlFor="message">Your message</label>
-        <textarea
-          id="message"
-          value={text}
-          onChange={(event) => setText(event.target.value)}
-          placeholder="Describe what you need help with..."
-          rows={3}
-          required
-          disabled={isSending}
-        />
-        <button type="submit" disabled={isSending || !text.trim()}>
-          {isSending ? "Sending..." : "Send"}
-        </button>
-        {error && <p role="alert">{error}</p>}
-      </form>
-    </main>
-  );
+  return <main>
+    <header><div><p className="eyebrow">KESTREL / SUPPORT OPERATIONS</p><h1>Ticket triage</h1><p>Turn a customer request into a clear next step.</p></div><nav><a href="/chat">Chat exercise</a><a href="/smoke">Smoke tests</a><a href="/admin">Run history</a></nav></header>
+    <div className="grid"><section className="card"><h2>Incoming request</h2><form onSubmit={submit} aria-busy={busy}>
+      <label htmlFor="ticket">Subject and ticket body</label><textarea id="ticket" rows={12} value={ticket} onChange={e => setTicket(e.target.value)} maxLength={20000} placeholder="Paste a customer support ticket here…" disabled={busy} />
+      <small>{ticket.length.toLocaleString()} / 20,000 characters</small><button disabled={busy} type="submit">{busy ? "Analysing…" : "Triage ticket →"}</button>
+    </form>{error && <p role="alert">{error}</p>}</section>
+    <section className="card" aria-live="polite"><h2>Triage recommendation</h2>{result ? <><div className="badges"><span>{result.category.replaceAll("_", " ")}</span><span className={result.priority}>{result.priority} priority</span></div><h3>Summary</h3><p>{result.summary}</p><h3>Suggested action</h3><p>{result.suggested_action}</p><p className="muted">AI recommendation · Review before acting.</p></> : <p className="empty">{busy ? "Waiting for a validated model response…" : "Your ticket’s classification and next action will appear here."}</p>}</section></div>
+  </main>;
 }
+
