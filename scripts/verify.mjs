@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import http from "node:http";
 import { spawn } from "node:child_process";
-import { mkdtemp, readFile, readdir } from "node:fs/promises";
+import { mkdtemp, readFile, readdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 let mode = "ok",
   calls = 0;
@@ -16,6 +16,54 @@ const mock = http.createServer(async (req, res) => {
   for await (const chunk of req) body += chunk;
   const input = JSON.parse(body);
   calls++;
+  if (req.url.includes("/accounts/")) {
+    assert.equal(req.headers.authorization, "Bearer test-cf-token");
+    assert.equal(input.model, "clef-flash");
+    assert.equal(input.questions.category.type, "choice");
+    assert.ok(!("messages" in input));
+    res.setHeader("Content-Type", "application/json");
+    if (mode === "cf-quota") {
+      res.writeHead(429);
+      res.end("{}");
+      return;
+    }
+    if (mode === "cf-auth") {
+      res.writeHead(403);
+      res.end('{"secret":"provider-private"}');
+      return;
+    }
+    if (mode === "cf-invalid-json") {
+      res.end("not json");
+      return;
+    }
+    res.end(
+      JSON.stringify({
+        success: true,
+        result: {
+          model: "clef-flash",
+          answers: {
+            category: {
+              type: "choice",
+              choice: mode === "cf-invalid" ? "invented" : "technical_bug",
+              probabilities: {
+                billing: 0.1,
+                technical_bug: mode === "cf-inconsistent" ? 0.1 : 0.7,
+                account: 0.1,
+                feature_request: 0.1,
+              },
+            },
+            priority: {
+              type: "choice",
+              choice: "low",
+              probabilities: { low: 0.8, medium: 0.1, high: 0.1 },
+            },
+          },
+          usage: { input_tokens: 100, output_tokens: 0 },
+        },
+      }),
+    );
+    return;
+  }
   assert.equal(req.headers.authorization, "Bearer test-key");
   assert.ok(input.messages[0].role === "system");
   res.setHeader("Content-Type", "application/json");
@@ -57,6 +105,13 @@ await new Promise((resolve) => mock.listen(0, "127.0.0.1", resolve));
 const mockPort = mock.address().port,
   appPort = 3041;
 const storage = await mkdtemp(path.join(process.cwd(), "tmp-tests-"));
+// Next dev regenerates type paths for the isolated build directory.
+const typeConfigBackups = await Promise.all(
+  ["next-env.d.ts", "tsconfig.json"].map(async (name) => [
+    name,
+    await readFile(name),
+  ]),
+);
 let output = "";
 const child = spawn(
   process.execPath,
@@ -74,6 +129,10 @@ const child = spawn(
       LLM_INPUT_PRICE_PER_MILLION: "0",
       LLM_OUTPUT_PRICE_PER_MILLION: "0",
       SMOKE_DELAY_MS: "0",
+      CLOUDFLARE_ACCOUNT_ID: "test-account",
+      CLOUDFLARE_API_TOKEN: "test-cf-token",
+      CLOUDFLARE_API_BASE: `http://127.0.0.1:${mockPort}/v4`,
+      CLOUDFLARE_INPUT_PRICE_PER_MILLION: "0.038",
     },
     stdio: ["ignore", "pipe", "pipe"],
   },
@@ -150,6 +209,34 @@ try {
   assert.equal(run.summary.cost_usd, 0);
   const again = await runTest("labelled100", 2, run.id, "test-model-2");
   assert.deepEqual(again.ticket_ids, run.ticket_ids);
+  const clef = "@cf/cloudflare/clef-flash";
+  r = await post("/api/triage", { ticket: "A display issue", model: clef });
+  d = await r.json();
+  assert.equal(r.status, 200);
+  assert.equal(d.result.category, "technical_bug");
+  assert.equal(d.result.summary, null);
+  assert.equal(d.result.suggested_action, null);
+  assert.deepEqual(d.usage, { input: 100, output: 0, total: 100 });
+  assert.ok(Math.abs(d.cost_usd - 0.0000038) < 1e-12);
+  for (const bad of ["cf-invalid", "cf-inconsistent", "cf-invalid-json"]) {
+    mode = bad;
+    await checkStatus({ ticket: "x", model: clef }, 502);
+  }
+  mode = "cf-quota";
+  await checkStatus({ ticket: "x", model: clef }, 429);
+  mode = "cf-auth";
+  r = await post("/api/triage", { ticket: "x", model: clef });
+  assert.equal(r.status, 500);
+  assert.ok(!(await r.text()).includes("provider-private"));
+  mode = "ok";
+  const cfRun = await runTest("labelled100", 2, run.id, clef);
+  assert.deepEqual(cfRun.ticket_ids, run.ticket_ids);
+  assert.equal(cfRun.prompt_version, "clef-v1");
+  assert.equal(cfRun.summary.succeeded, 2);
+  assert.equal(cfRun.summary.tokens.output, 0);
+  const fullCf = await runTest("labelled100", 100, undefined, clef);
+  assert.equal(fullCf.rows.length, 100);
+  assert.equal(fullCf.summary.succeeded, 100);
   const unlabelled = await runTest("tickets500", 1);
   assert.equal(unlabelled.summary.category_accuracy, null);
   mode = "quota";
@@ -175,12 +262,13 @@ try {
     "utf8",
   );
   assert.ok(!logs.includes("test-key"));
+  assert.ok(!logs.includes("test-cf-token"));
   assert.ok(!logs.includes("UI sort arrow"));
   assert.equal(
     (await readdir(path.join(storage, "runs"))).filter((n) =>
       n.endsWith(".json"),
     ).length,
-    4,
+    6,
   );
   console.log(
     "PASS: request validation, output validation/retry/truncation, usage, safe errors, sampling, both datasets, replay, quota-stop, persistence, admin comparison and privacy.",
@@ -192,5 +280,7 @@ try {
 } finally {
   child.kill();
   mock.close();
+  for (const [name, content] of typeConfigBackups)
+    await writeFile(name, content);
   setTimeout(() => process.exit(process.exitCode || 0), 1000).unref();
 }

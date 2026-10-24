@@ -6,6 +6,8 @@ import { triage } from "./triage";
 import { TicketSchema } from "./schema";
 import { safeError } from "./errors";
 import { PROMPT_VERSION } from "./prompt";
+import { DECISION_MODEL, DECISION_VERSION } from "./decision";
+import type { DisplayResult } from "./schema";
 export const RunRequestSchema = z.strictObject({
   dataset: z.enum(["labelled100", "tickets500"]),
   count: z.number().int().min(1).max(500),
@@ -15,12 +17,7 @@ export const RunRequestSchema = z.strictObject({
 export type RunRow = {
   ticket_id: string;
   expected: { category: string; priority: string } | null;
-  predicted: {
-    category: string;
-    priority: string;
-    summary: string;
-    suggested_action: string;
-  } | null;
+  predicted: DisplayResult | null;
   status: number;
   error?: string;
   latency_ms: number;
@@ -33,6 +30,7 @@ export type Run = {
   created_at: string;
   prompt_version: string;
   model: string;
+  cost_basis?: string;
   dataset: string;
   requested: number;
   ticket_ids: string[];
@@ -120,8 +118,13 @@ export function createRun(
   return {
     id: randomUUID(),
     created_at: new Date().toISOString(),
-    prompt_version: PROMPT_VERSION,
+    prompt_version:
+      model === DECISION_MODEL ? DECISION_VERSION : PROMPT_VERSION,
     model,
+    cost_basis:
+      model === DECISION_MODEL
+        ? `Configured USD per million tokens: input ${process.env.CLOUDFLARE_INPUT_PRICE_PER_MILLION || "unknown"}; output 0. Free allocation is not automatically deducted.`
+        : `Configured USD per million tokens: input ${process.env.LLM_INPUT_PRICE_PER_MILLION || "unknown"}; output ${process.env.LLM_OUTPUT_PRICE_PER_MILLION || "unknown"}.`,
     dataset,
     requested: count,
     ticket_ids: ids || pool.slice(0, count),

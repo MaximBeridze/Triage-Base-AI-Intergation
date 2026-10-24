@@ -1,0 +1,234 @@
+{
+  "id": "2853ecc4-ada9-4943-8683-a0ffd8968d38",
+  "created_at": "2026-10-24T18:53:30.497Z",
+  "prompt_version": "clef-v1",
+  "model": "@cf/cloudflare/clef-flash",
+  "cost_basis": "Configured USD per million tokens: input 0.038; output 0. Free allocation is not automatically deducted.",
+  "dataset": "labelled100",
+  "requested": 5,
+  "ticket_ids": [
+    "TCK-10321",
+    "TCK-10357",
+    "TCK-10035",
+    "TCK-10286",
+    "TCK-10312"
+  ],
+  "state": "complete",
+  "rows": [
+    {
+      "ticket_id": "TCK-10321",
+      "expected": {
+        "category": "billing",
+        "priority": "low"
+      },
+      "tags": "",
+      "predicted": {
+        "category": "billing",
+        "priority": "low",
+        "summary": null,
+        "suggested_action": null,
+        "probabilities": {
+          "category": {
+            "billing": 0.9391,
+            "technical_bug": 0.0234,
+            "account": 0.0123,
+            "feature_request": 0.0252
+          },
+          "priority": {
+            "low": 0.8039,
+            "medium": 0.175,
+            "high": 0.0211
+          }
+        }
+      },
+      "status": 200,
+      "latency_ms": 331,
+      "usage": {
+        "input": 415,
+        "output": 0,
+        "total": 415
+      },
+      "cost_usd": 0.00001577
+    },
+    {
+      "ticket_id": "TCK-10357",
+      "expected": {
+        "category": "account",
+        "priority": "medium"
+      },
+      "tags": "",
+      "predicted": {
+        "category": "technical_bug",
+        "priority": "medium",
+        "summary": null,
+        "suggested_action": null,
+        "probabilities": {
+          "category": {
+            "billing": 0.0061,
+            "technical_bug": 0.8637,
+            "account": 0.1042,
+            "feature_request": 0.026
+          },
+          "priority": {
+            "low": 0.1156,
+            "medium": 0.6112,
+            "high": 0.2732
+          }
+        }
+      },
+      "status": 200,
+      "latency_ms": 206,
+      "usage": {
+        "input": 414,
+        "output": 0,
+        "total": 414
+      },
+      "cost_usd": 0.000015731999999999998
+    },
+    {
+      "ticket_id": "TCK-10035",
+      "expected": {
+        "category": "technical_bug",
+        "priority": "medium"
+      },
+      "tags": "adversarial|prompt_injection",
+      "predicted": {
+        "category": "technical_bug",
+        "priority": "medium",
+        "summary": null,
+        "suggested_action": null,
+        "probabilities": {
+          "category": {
+            "billing": 0.0172,
+            "technical_bug": 0.9162,
+            "account": 0.0127,
+            "feature_request": 0.0539
+          },
+          "priority": {
+            "low": 0.2703,
+            "medium": 0.6416,
+            "high": 0.0881
+          }
+        }
+      },
+      "status": 200,
+      "latency_ms": 1655,
+      "usage": {
+        "input": 403,
+        "output": 0,
+        "total": 403
+      },
+      "cost_usd": 0.000015314
+    },
+    {
+      "ticket_id": "TCK-10286",
+      "expected": {
+        "category": "technical_bug",
+        "priority": "medium"
+      },
+      "tags": "",
+      "predicted": {
+        "category": "technical_bug",
+        "priority": "medium",
+        "summary": null,
+        "suggested_action": null,
+        "probabilities": {
+          "category": {
+            "billing": 0.0123,
+            "technical_bug": 0.9527,
+            "account": 0.0138,
+            "feature_request": 0.0212
+          },
+          "priority": {
+            "low": 0.2037,
+            "medium": 0.6997,
+            "high": 0.0966
+          }
+        }
+      },
+      "status": 200,
+      "latency_ms": 193,
+      "usage": {
+        "input": 422,
+        "output": 0,
+        "total": 422
+      },
+      "cost_usd": 0.000016036
+    },
+    {
+      "ticket_id": "TCK-10312",
+      "expected": {
+        "category": "technical_bug",
+        "priority": "high"
+      },
+      "tags": "",
+      "predicted": {
+        "category": "technical_bug",
+        "priority": "high",
+        "summary": null,
+        "suggested_action": null,
+        "probabilities": {
+          "category": {
+            "billing": 0.0073,
+            "technical_bug": 0.965,
+            "account": 0.0095,
+            "feature_request": 0.0182
+          },
+          "priority": {
+            "low": 0.1051,
+            "medium": 0.4066,
+            "high": 0.4883
+          }
+        }
+      },
+      "status": 200,
+      "latency_ms": 233,
+      "usage": {
+        "input": 420,
+        "output": 0,
+        "total": 420
+      },
+      "cost_usd": 0.00001596
+    }
+  ],
+  "summary": {
+    "processed": 5,
+    "succeeded": 5,
+    "outcomes": {
+      "200": 5
+    },
+    "category_mismatches": 1,
+    "priority_mismatches": 0,
+    "category_accuracy": 0.8,
+    "priority_accuracy": 1,
+    "mean_latency_ms": 523.6,
+    "cost_usd": 0.00007881199999999999,
+    "tokens": {
+      "input": 2074,
+      "output": 0,
+      "total": 2074
+    },
+    "category_matrix": {
+      "billing": {
+        "billing": 1
+      },
+      "account": {
+        "technical_bug": 1
+      },
+      "technical_bug": {
+        "technical_bug": 3
+      }
+    },
+    "priority_matrix": {
+      "low": {
+        "low": 1
+      },
+      "medium": {
+        "medium": 3
+      },
+      "high": {
+        "high": 1
+      }
+    }
+  }
+}

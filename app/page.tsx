@@ -1,12 +1,12 @@
 "use client";
 import { useState, type FormEvent } from "react";
-import { TriageSchema, type TriageResult } from "../lib/schema";
+import { DisplayResultSchema, type DisplayResult } from "../lib/schema";
 import type { Usage } from "../lib/metrics";
 import ModelPicker from "./model-picker";
 export default function TriagePage() {
   const [ticket, setTicket] = useState("");
   const [model, setModel] = useState("");
-  const [result, setResult] = useState<TriageResult | null>(null);
+  const [result, setResult] = useState<DisplayResult | null>(null);
   const [usage, setUsage] = useState<Usage | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -23,7 +23,7 @@ export default function TriagePage() {
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Triage failed.");
-      setResult(TriageSchema.parse(data.result));
+      setResult(DisplayResultSchema.parse(data.result));
       setUsage(data.usage);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Triage failed.");
@@ -78,9 +78,24 @@ export default function TriagePage() {
                 </span>
               </div>
               <h3>Summary</h3>
-              <p>{result.summary}</p>
+              <p>
+                {result.summary ??
+                  "Not generated: Clef is a classification-only decision model."}
+              </p>
               <h3>Suggested action</h3>
-              <p>{result.suggested_action}</p>
+              <p>
+                {result.suggested_action ??
+                  "Choose Gemini for a written next action. This result measures Clef alone."}
+              </p>
+              {"probabilities" in result && (
+                <>
+                  <h3>Decision probabilities</h3>
+                  <p className="muted">
+                    Model estimates, not guarantees of correctness.
+                  </p>
+                  <pre>{JSON.stringify(result.probabilities, null, 2)}</pre>
+                </>
+              )}
               <h3>Token usage</h3>
               <p>
                 {usage

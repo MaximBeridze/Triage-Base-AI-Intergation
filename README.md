@@ -141,3 +141,52 @@ Each feature has a dedicated commit. The verification branch includes final test
 - Instructor's Teams F1–F5 checklist and provided Session 2 course PDF.
 
 AI assistance was used for implementation, verification and documentation. Experiments and measured failures are recorded in EXPERIMENTS.md.
+
+## Decision-model experiment (Activity 10)
+
+Clef-Flash is integrated as **@cf/cloudflare/clef-flash** through Cloudflare Workers AI REST. It appears in both model selectors when CLOUDFLARE_ACCOUNT_ID and CLOUDFLARE_API_TOKEN are configured in .env.local. These credentials are never returned by /api/config. No Cloudflare Worker deployment is needed.
+
+Clef receives the ticket as state and two typed choice questions. It returns category/priority distributions; it does not generate summaries or actions. The decision result has explicit null summary/action fields and a separate Zod schema. The browser explains this limitation rather than fabricating prose or making a hidden Gemini call. The original Gemini response schema remains unchanged. GET /api/triage also exposes decision_response.
+
+- lib/decision.ts: typed questions (clef-v1), fixed REST model, 30-second timeout, no automatic retries, response/probability validation, safe errors and metadata logging.
+- Distribution values must be between 0 and 1, sum to approximately 1, and the selected label must have the highest probability. These checks establish consistency, not calibrated certainty.
+- Usage is mapped to input/output/total; output tokens are zero for this decision model. Missing provider usage remains unavailable.
+- CLOUDFLARE_INPUT_PRICE_PER_MILLION is independent of Gemini pricing. The saved runs use **0.038 USD per million input tokens**, the published list-price estimate, with no free-allocation deduction. These estimates are not invoices or evidence of charges.
+- New runs preserve their configured pricing basis. Historical runs retain the pricing explanation in this README.
+- Existing smoke sampling, exact replay, confusion matrices, logging and admin comparison work for Clef.
+
+### Actual results — 2026-10-24
+
+| Run                            | Tickets                  | Category accuracy | Priority accuracy | Mean latency | Estimated USD            |
+| ------------------------------ | ------------------------ | ----------------- | ----------------- | ------------ | ------------------------ |
+| Gemini 3.5 Flash-Lite baseline | Same 5 labelled IDs      | 80%               | 100%              | 7.35 s       | 0 (configured free tier) |
+| Clef-Flash replay              | Same 5 labelled IDs      | 80%               | 100%              | 0.52 s       | 0.000078812 (list price) |
+| Clef-Flash full dev set        | All 100 labelled tickets | 91%               | 67%               | 0.51 s       | 0.001841252 (list price) |
+
+The full run completed 100/100 calls with 48,454 input tokens and no generated tokens. Seven high-priority tickets were downgraded to medium; 17 medium-priority tickets became low. Seven account tickets were labelled technical_bug. This identifies priority decisions and the account/bug boundary as concrete weaknesses to investigate.
+
+The five-ticket replay is a small direct classification comparison. Latency also reflects that Gemini generates summaries/actions while Clef does not; it is not an equivalent full-output speed benchmark. The full 100-ticket result is a development-set measurement, not an unseen hold-out score.
+
+**Which model for which task:** use Clef as a fast category-routing candidate, with reviewed priority decisions; use Gemini when written summaries and next actions are required. No automatic routing threshold is claimed to be calibrated by this experiment.
+
+Evidence:
+
+- Replay: runs/2853ecc4-ada9-4943-8683-a0ffd8968d38.json
+- Full dev set: runs/758c7342-5b1b-42aa-97b4-b90159cb2df0.json
+- Original Gemini baseline: runs/19f9373c-caa3-4a60-af38-20038dceafee.json
+- output/decision-verification.json and output/clef-result.png
+- [Open the saved comparison](http://localhost:3033/admin?left=19f9373c-caa3-4a60-af38-20038dceafee&right=2853ecc4-ada9-4943-8683-a0ffd8968d38)
+
+An initial full-set attempt stopped at 98 processed tickets with no provider-failure rows. Its interrupted checkpoint is retained (ee61c595-8a72-4351-aa1e-2d7a15ff6d92). The original exception was not captured, so its root cause is unconfirmed. Added safe server diagnostics and bounded retries for transient Windows file-replacement locks; the regression suite's 100-ticket mock run and the repeated live 100-ticket run both completed. The earlier five-ticket Clef run is retained too.
+
+To repeat the decision experiment (106 real calls before any manual retry):
+
+```powershell
+npm run test:clef
+```
+
+This starts a production server on port 3042, uses the existing five-ticket baseline for replay, then runs the full labelled set. Run npm run build first. Your Cloudflare free allowance and rate limits still apply. The runner stops on quota/configuration failure, without enabling paid billing.
+
+The integration suite now also covers Cloudflare routing, invalid labels/JSON/probabilities, safe authorization/quota errors, null generation fields, usage/cost conversion, exact replay and a complete 100-ticket decision-model run.
+
+References: [Clef-Flash model and API](https://developers.cloudflare.com/workers-ai/models/clef-flash/), [Workers AI free allocation and pricing](https://developers.cloudflare.com/workers-ai/platform/pricing/).

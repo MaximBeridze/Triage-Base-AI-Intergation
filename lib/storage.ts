@@ -14,7 +14,21 @@ export async function saveRun(run: Run) {
   await mkdir(directory, { recursive: true });
   const target = path.join(directory, `${run.id}.json`);
   await writeFile(target + ".tmp", JSON.stringify(run, null, 2));
-  await rename(target + ".tmp", target);
+  // Windows readers/antivirus can briefly lock the destination during replace.
+  for (let attempt = 0; ; attempt++) {
+    try {
+      await rename(target + ".tmp", target);
+      break;
+    } catch (error) {
+      const code =
+        typeof error === "object" && error !== null && "code" in error
+          ? error.code
+          : "";
+      if (attempt >= 4 || !["EPERM", "EACCES", "EBUSY"].includes(String(code)))
+        throw error;
+      await new Promise((resolve) => setTimeout(resolve, 50 * (attempt + 1)));
+    }
+  }
 }
 export async function listRuns(): Promise<Run[]> {
   await mkdir(directory, { recursive: true });

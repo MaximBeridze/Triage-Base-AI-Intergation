@@ -14,5 +14,31 @@ export const TriageSchema = z.strictObject({
   suggested_action: z.string().trim().min(1).max(500),
 });
 export type TriageResult = z.infer<typeof TriageSchema>;
+const probability = z.number().min(0).max(1);
+export const DecisionResultSchema = TriageSchema.pick({
+  category: true,
+  priority: true,
+}).extend({
+  summary: z.null(),
+  suggested_action: z.null(),
+  probabilities: z.strictObject({
+    category: z.strictObject({
+      billing: probability,
+      technical_bug: probability,
+      account: probability,
+      feature_request: probability,
+    }),
+    priority: z.strictObject({
+      low: probability,
+      medium: probability,
+      high: probability,
+    }),
+  }),
+});
+export const DisplayResultSchema = z.union([
+  TriageSchema,
+  DecisionResultSchema,
+]);
+export type DisplayResult = z.infer<typeof DisplayResultSchema>;
 export const requestJsonSchema = z.toJSONSchema(TicketSchema);
 export const responseJsonSchema = z.toJSONSchema(TriageSchema);
