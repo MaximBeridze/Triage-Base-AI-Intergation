@@ -3,6 +3,8 @@ import { TriageSchema, responseJsonSchema } from "./schema";
 import { SYSTEM_PROMPT } from "./prompt";
 import { AppError } from "./errors";
 import { usageFrom, costFor, type Usage } from "./metrics";
+import { logCall } from "./storage";
+import { PROMPT_VERSION } from "./prompt";
 
 export async function triage(ticket: string, model = process.env.LLM_MODEL!) {
   const started = Date.now();
@@ -21,6 +23,7 @@ export async function triage(ticket: string, model = process.env.LLM_MODEL!) {
     const choice = completion.choices[0];
     const current = usageFrom(completion.usage);
     usage = usage && current ? { input: usage.input + current.input, output: usage.output + current.output, total: usage.total + current.total } : null;
+    await logCall({ ts: new Date().toISOString(), route: "triage", api: "chat_completions", prompt_version: PROMPT_VERSION, model, attempt: attempt + 1, usage: current, cost_usd: costFor(current), finish_reason: choice?.finish_reason ?? null });
     let text = choice?.message.content ?? "";
     if (mode === "prompt") text = text.replace(/^\s*```(?:json)?\s*/i, "").replace(/\s*```\s*$/, "");
     try {
