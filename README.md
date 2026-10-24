@@ -190,3 +190,13 @@ This starts a production server on port 3042, uses the existing five-ticket base
 The integration suite now also covers Cloudflare routing, invalid labels/JSON/probabilities, safe authorization/quota errors, null generation fields, usage/cost conversion, exact replay and a complete 100-ticket decision-model run.
 
 References: [Clef-Flash model and API](https://developers.cloudflare.com/workers-ai/models/clef-flash/), [Workers AI free allocation and pricing](https://developers.cloudflare.com/workers-ai/platform/pricing/).
+
+## Final assignment alignment
+
+The C5 Decisions Decisions deck (page 22) requires **LLM-DM-report.md**. That report now contains hosted-model alternatives, selection justification, strategy choices, results, analysis and limitations. The strategy/model menus explicitly label **LLM · generate** and **DM · classify**; a combined DM+LLM flow was considered but is not implemented.
+
+Plain-text **Triage V1** is available at /triage-v1 using POST /api/triage/v1. Its prompt and version are in lib/prompt.ts. It shares request guards and safe errors, but deliberately does not validate classification fields in the model's prose. The default / page remains structured **V2**. This preserves both teaching checkpoints in the final app.
+
+Course-document cross-check: C3 defines chat history and V1; C4 continues V2 and evaluation; the Teams checklist defines F1–F5; C5 Part III and its extra deck define the complete submission and mandatory DM report. The C6 RAG specification belongs to a separate project.
+
+**Submission:** C5 states Saturday 24 October 2026 at 13:00, by email to denis.amselem@epita.fr. The repository has been pushed; no email has been sent by this agent. Sending the repository link by the required channel remains the student's action.

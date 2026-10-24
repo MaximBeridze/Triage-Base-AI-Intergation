@@ -4,10 +4,12 @@ export default function ModelPicker({
   value,
   onChange,
   disabled,
+  llmOnly = false,
 }: {
   value: string;
   onChange: (value: string) => void;
   disabled: boolean;
+  llmOnly?: boolean;
 }) {
   const [models, setModels] = useState<string[]>([]),
     [error, setError] = useState("");
@@ -18,14 +20,19 @@ export default function ModelPicker({
         return r.json();
       })
       .then((d) => {
-        setModels(d.models);
-        onChange(d.defaultModel);
+        const choices: string[] = llmOnly
+          ? d.models.filter((m: string) => !m.startsWith("@cf/cloudflare/clef"))
+          : d.models;
+        setModels(choices);
+        onChange(
+          choices.includes(d.defaultModel) ? d.defaultModel : choices[0] || "",
+        );
       })
       .catch(() => setError("Unable to load model configuration."));
   }, []); // configuration loads once
   return (
     <label>
-      Model
+      Strategy and model
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
@@ -33,7 +40,12 @@ export default function ModelPicker({
       >
         {!models.length && <option value="">Loading…</option>}
         {models.map((m) => (
-          <option key={m}>{m}</option>
+          <option key={m} value={m}>
+            {m.startsWith("@cf/cloudflare/clef")
+              ? "DM · classify"
+              : "LLM · generate"}{" "}
+            — {m}
+          </option>
         ))}
       </select>
       {error && <small role="alert">{error}</small>}

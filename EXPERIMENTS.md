@@ -21,3 +21,15 @@ Five tickets are insufficient to establish general accuracy. The labelled subset
 | 2026-10-24 | clef-v1        | Cloudflare / clef-flash | ee61c595-8a72-4351-aa1e-2d7a15ff6d92 | Interrupted after 98 processed tickets, all provider calls successful | Outer run failure; original exception unavailable                          | Added safe diagnostics and bounded Windows rename retries; root cause unconfirmed       |
 | 2026-10-24 | clef-v1        | Cloudflare / clef-flash | 2853ecc4-ada9-4943-8683-a0ffd8968d38 | Repeated five-ticket replay: 80% category, 100% priority, 0.52 s mean | Same category disagreement                                                 | Kept version for larger evaluation                                                      |
 | 2026-10-24 | clef-v1        | Cloudflare / clef-flash | 758c7342-5b1b-42aa-97b4-b90159cb2df0 | All 100: category 91%, priority 67%, mean 0.51 s                      | Seven high-to-medium priority errors; seven account-to-bug category errors | Recommend reviewed priority decisions; future rubric tuning needs a separate evaluation |
+
+## Restored V1 baseline
+
+| Date       | Prompt version | Provider / model      | Ticket    | Observation           | Failure / next action                                                                        |
+| ---------- | -------------- | --------------------- | --------- | --------------------- | -------------------------------------------------------------------------------------------- |
+| 2026-10-24 | triage-v1      | Gemini 3.5 Flash-Lite | TCK-10001 | technical_bug / low   | Matches provided label                                                                       |
+| 2026-10-24 | triage-v1      | Gemini 3.5 Flash-Lite | TCK-10017 | technical_bug / high  | Expected medium; baseline prompt over-escalates lost work                                    |
+| 2026-10-24 | triage-v1      | Gemini 3.5 Flash-Lite | TCK-10019 | technical_bug / high  | Expected medium; slowdown despite continued work over-escalated                              |
+| 2026-10-24 | triage-v1      | Gemini 3.5 Flash-Lite | TCK-10087 | technical_bug / low   | Injection not obeyed, but billing/how-to category interpretation differs from course example |
+| 2026-10-24 | triage-v1      | Gemini 3.5 Flash-Lite | TCK-10005 | feature_request / low | Differs from the course's billing-related interpretation; not in labelled 100 subset         |
+
+Full plain-text outputs and token counts are preserved in output/v1-verification.json. Keep V1 unchanged as a baseline; test rubric changes under a new version rather than modifying recorded results.

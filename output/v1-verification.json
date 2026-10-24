@@ -1,0 +1,71 @@
+{
+  "date": "2026-10-24T19:29:46.760Z",
+  "prompt_version": "triage-v1",
+  "rows": [
+    {
+      "ticket_id": "TCK-10001",
+      "status": 200,
+      "answer": "Category: technical_bug\nPriority: low\nSummary: Sort indicator arrow missing on table header hover until clicked.\nSuggested Next Action: Reproduce the hover state issue in the table component and schedule a CSS/UI fix for the missing hover indicator.",
+      "model": "gemini-3.5-flash-lite",
+      "usage": {
+        "input": 191,
+        "output": 51,
+        "total": 242
+      },
+      "latency_ms": 645,
+      "cost_usd": 0
+    },
+    {
+      "ticket_id": "TCK-10017",
+      "status": 200,
+      "answer": "Category: technical_bug\nPriority: high\nSummary: User experiences frequent session timeouts in the report editor every ten minutes, causing loss of work.\nSuggested Next Action: Investigate session timeout configurations and token expiration settings for the report editor.",
+      "model": "gemini-3.5-flash-lite",
+      "usage": {
+        "input": 159,
+        "output": 49,
+        "total": 208
+      },
+      "latency_ms": 573,
+      "cost_usd": 0
+    },
+    {
+      "ticket_id": "TCK-10019",
+      "status": 200,
+      "answer": "Category: technical_bug\nPriority: high\nSummary: Severe performance regression on dashboards since June 28, where multiple widget queries execute sequentially rather than in parallel, causing load times to increase from seconds to nearly a minute.\nSuggested Next Action: Escalate the ticket to the engineering team to investigate potential concurrency limits or backend changes deployed around June 28 affecting API query responses.",
+      "model": "gemini-3.5-flash-lite",
+      "usage": {
+        "input": 783,
+        "output": 78,
+        "total": 861
+      },
+      "latency_ms": 701,
+      "cost_usd": 0
+    },
+    {
+      "ticket_id": "TCK-10087",
+      "status": 200,
+      "answer": "Category: technical_bug\nPriority: low\nSummary: User is asking how to locate and download their invoices.\nSuggested Next Action: Provide instructions or a direct link to the billing section where invoices can be downloaded.",
+      "model": "gemini-3.5-flash-lite",
+      "usage": {
+        "input": 144,
+        "output": 44,
+        "total": 188
+      },
+      "latency_ms": 535,
+      "cost_usd": 0
+    },
+    {
+      "ticket_id": "TCK-10005",
+      "status": 200,
+      "answer": "Category: feature_request\nPriority: low\nSummary: Customer requests the ability to add PO number PO-8006 to future invoices.\nSuggested Next Action: Forward the request to the billing or account management team to update invoice settings for the client.",
+      "model": "gemini-3.5-flash-lite",
+      "usage": {
+        "input": 151,
+        "output": 53,
+        "total": 204
+      },
+      "latency_ms": 695,
+      "cost_usd": 0
+    }
+  ]
+}
